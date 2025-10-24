@@ -34,6 +34,8 @@
   "homepage": "https://github.com/tiagoguatierri/middy-mcp-adapter#readme",
   "devDependencies": {
     "@eslint/js": "^9.38.0",
+    "@types/aws-lambda": "^8.10.156",
+    "@types/node": "^24.9.1",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^16.4.0",
@@ -43,5 +45,11 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.2",
     "vitest": "^4.0.3"
+  },
+  "dependencies": {
+    "@middy/core": "^6.4.5",
+    "@modelcontextprotocol/sdk": "^1.20.2",
+    "@types/http-errors": "^2.0.5",
+    "http-errors": "^2.0.0"
   }
 }
