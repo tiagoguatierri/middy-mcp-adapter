@@ -20,26 +20,22 @@ type MCPContext = Context & {
   mcpTransport?: StreamableHTTPServerTransport
 }
 
-// Type for Lambda authorizer data
 type AuthorizerData = APIGatewayEventRequestContext['authorizer']
 
-// Enhanced IncomingMessage with auth data
 type IncomingMessageWithAuth = IncomingMessage & {
   auth?: AuthorizerData
 }
 
-// Event listener type for ServerResponse events
 type EventListener = (...args: unknown[]) => void
 
-// Write method overloads
 type WriteCallback = (error?: Error | null) => void
+
 type WriteData = string | Buffer
 
-// End method overloads
 type EndCallback = (error?: Error | null) => void
+
 type EndData = string | Buffer
 
-// Mutable ServerResponse for our mock implementation
 interface MockServerResponse extends Omit<ServerResponse, 'headersSent'> {
   statusCode: number
   headersSent: boolean
@@ -201,7 +197,6 @@ function createServerResponse(): {
         }
       }
 
-      // Handle callback-based overloads
       if (typeof encodingOrCallback === 'function') {
         encodingOrCallback()
       } else if (typeof callback === 'function') {
@@ -215,22 +210,17 @@ function createServerResponse(): {
       encodingOrCallback?: BufferEncoding | EndCallback,
       callback?: EndCallback
     ): MockServerResponse => {
-      // Handle different overload signatures
       let chunk: EndData | undefined
       let finalCallback: EndCallback | undefined
 
       if (typeof chunkOrCallback === 'function') {
-        // end(callback)
         finalCallback = chunkOrCallback
       } else {
-        // end(chunk, ...) or end()
         chunk = chunkOrCallback
 
         if (typeof encodingOrCallback === 'function') {
-          // end(chunk, callback)
           finalCallback = encodingOrCallback
         } else if (typeof callback === 'function') {
-          // end(chunk, encoding, callback)
           finalCallback = callback
         }
       }
@@ -248,7 +238,6 @@ function createServerResponse(): {
         resolveFinish()
       }
 
-      // Emit finish event
       res.emit('finish')
 
       if (finalCallback) {
