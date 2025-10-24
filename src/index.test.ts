@@ -9,6 +9,8 @@ import type { MCPContext } from './index.js'
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 
 import middy from '@middy/core'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import mcpMiddleware from './index.js'
 
 describe('mcpMiddleware', () => {
@@ -297,6 +299,105 @@ describe('mcpMiddleware', () => {
       // MCP should handle invalid requests gracefully
       expect(response.statusCode).toBeGreaterThanOrEqual(200)
     })
+
+    it('should throw error when transport not initialized in after hook', async () => {
+      const middleware = mcpMiddleware({
+        server: server as unknown as McpServer
+      })
+      const request = {
+        event: createMockEvent(),
+        context: {
+          ...defaultContext,
+          mcpTransport: undefined
+        },
+        response: {} as APIGatewayProxyResult,
+        error: null,
+        internal: {}
+      }
+
+      await expect(
+        middleware.after!(
+          request as middy.Request<
+            APIGatewayProxyEvent,
+            APIGatewayProxyResult,
+            Error,
+            MCPContext
+          >
+        )
+      ).rejects.toThrow('MCP Transport not initialized')
+    })
+
+    it('should handle server connection errors', async () => {
+      const badServer = new Server(
+        {
+          name: 'bad-server',
+          version: '1.0.0'
+        },
+        {
+          capabilities: {}
+        }
+      )
+
+      // Override connect to throw a non-Error object
+      const originalConnect = badServer.connect.bind(badServer)
+      badServer.connect = vi.fn().mockRejectedValue('String error')
+
+      const badHandler = middy().use(
+        mcpMiddleware({ server: badServer as unknown as McpServer })
+      )
+
+      const event = createMockEvent({
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'ping'
+        })
+      })
+
+      const freshContext = { ...defaultContext }
+      await expect(badHandler(event, freshContext)).rejects.toThrow(
+        'Failed to initialize MCP transport'
+      )
+
+      badServer.connect = originalConnect
+    })
+
+    it('should handle headers with null values', async () => {
+      const event = createMockEvent({
+        headers: {
+          'content-type': 'application/json',
+          accept: 'application/json, text/event-stream',
+          'x-null-header': null as unknown as string
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tools/list'
+        })
+      })
+
+      const response = await handler(event, defaultContext)
+      expect(response.statusCode).toBe(200)
+    })
+
+    it('should handle query parameters with null values', async () => {
+      const event = createMockEvent({
+        path: '/mcp',
+        queryStringParameters: {
+          valid: 'value',
+          nullParam: null as unknown as string,
+          undefined: undefined as unknown as string
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tools/list'
+        })
+      })
+
+      const response = await handler(event, defaultContext)
+      expect(response.statusCode).toBe(200)
+    })
   })
 
   describe('compatibility with other middlewares', () => {
@@ -437,6 +538,116 @@ describe('mcpMiddleware', () => {
       const response = await handler(event, defaultContext)
 
       expect([200, 201, 202, 204]).toContain(response.statusCode)
+    })
+
+    it('should handle response with various status codes', async () => {
+      // Test a different status code by calling a non-existent method
+      const event = createMockEvent({
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'nonexistent/method'
+        })
+      })
+
+      const response = await handler(event, defaultContext)
+
+      expect(response.statusCode).toBeGreaterThanOrEqual(200)
+      expect(response.body).toBeDefined()
+    })
+
+    it('should handle events without body', async () => {
+      const event = createMockEvent({
+        body: null
+      })
+
+      const response = await handler(event, defaultContext)
+
+      expect(response.statusCode).toBeGreaterThanOrEqual(200)
+    })
+
+    it('should handle events with invalid JSON body', async () => {
+      const event = createMockEvent({
+        body: 'not-a-json-string'
+      })
+
+      const response = await handler(event, defaultContext)
+
+      expect(response.statusCode).toBeGreaterThanOrEqual(200)
+    })
+
+    it('should handle large response bodies', async () => {
+      // Register a tool that returns large content
+      server.setRequestHandler(
+        CallToolRequestSchema,
+        async (request: { params: { name: string; arguments?: unknown } }) => {
+          if (request.params.name === 'large') {
+            const largeText = 'x'.repeat(10000)
+            return {
+              content: [
+                {
+                  type: 'text',
+                  text: largeText
+                }
+              ]
+            }
+          }
+          return {
+            content: [{ type: 'text', text: 'default' }]
+          }
+        }
+      )
+
+      const event = createMockEvent({
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tools/call',
+          params: {
+            name: 'large',
+            arguments: {}
+          }
+        })
+      })
+
+      const response = await handler(event, defaultContext)
+
+      expect(response.statusCode).toBe(200)
+      expect(response.body.length).toBeGreaterThan(1000)
+    })
+
+    it('should handle multiple sequential requests', async () => {
+      const events = Array.from({ length: 3 }, (_, i) =>
+        createMockEvent({
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: i + 1,
+            method: 'tools/list'
+          })
+        })
+      )
+
+      // Execute sequentially to avoid transport conflicts
+      for (const event of events) {
+        const response = await handler(event, defaultContext)
+        expect(response.statusCode).toBe(200)
+      }
+    })
+
+    it('should handle response headers correctly', async () => {
+      const event = createMockEvent({
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tools/list'
+        })
+      })
+
+      const response = await handler(event, defaultContext)
+
+      expect(response.statusCode).toBe(200)
+      expect(response.headers).toBeDefined()
+      expect(typeof response.headers).toBe('object')
     })
   })
 })

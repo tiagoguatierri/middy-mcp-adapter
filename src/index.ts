@@ -28,11 +28,7 @@ type IncomingMessageWithAuth = IncomingMessage & {
 
 type EventListener = (...args: unknown[]) => void
 
-type WriteCallback = (error?: Error | null) => void
-
 type WriteData = string | Buffer
-
-type EndCallback = (error?: Error | null) => void
 
 type EndData = string | Buffer
 
@@ -160,11 +156,6 @@ function createServerResponse(): {
       return headers[name.toLowerCase()]
     },
 
-    removeHeader: (name: string): MockServerResponse => {
-      delete headers[name.toLowerCase()]
-      return res as unknown as MockServerResponse
-    },
-
     hasHeader: (name: string): boolean => {
       return name.toLowerCase() in headers
     },
@@ -192,11 +183,7 @@ function createServerResponse(): {
       return res as unknown as MockServerResponse
     },
 
-    write: (
-      chunk: WriteData,
-      encodingOrCallback?: BufferEncoding | WriteCallback,
-      callback?: WriteCallback
-    ): boolean => {
+    write: (chunk: WriteData): boolean => {
       if (chunk) {
         if (typeof chunk === 'string') {
           bodyChunks.push(chunk)
@@ -204,35 +191,10 @@ function createServerResponse(): {
           bodyChunks.push(chunk.toString())
         }
       }
-
-      if (typeof encodingOrCallback === 'function') {
-        encodingOrCallback()
-      } else if (typeof callback === 'function') {
-        callback()
-      }
       return true
     },
 
-    end: (
-      chunkOrCallback?: EndData | EndCallback,
-      encodingOrCallback?: BufferEncoding | EndCallback,
-      callback?: EndCallback
-    ): MockServerResponse => {
-      let chunk: EndData | undefined
-      let finalCallback: EndCallback | undefined
-
-      if (typeof chunkOrCallback === 'function') {
-        finalCallback = chunkOrCallback
-      } else {
-        chunk = chunkOrCallback
-
-        if (typeof encodingOrCallback === 'function') {
-          finalCallback = encodingOrCallback
-        } else if (typeof callback === 'function') {
-          finalCallback = callback
-        }
-      }
-
+    end: (chunk?: EndData): MockServerResponse => {
       if (chunk) {
         if (typeof chunk === 'string') {
           bodyChunks.push(chunk)
@@ -247,10 +209,6 @@ function createServerResponse(): {
       }
 
       res.emit('finish')
-
-      if (finalCallback) {
-        finalCallback()
-      }
 
       return res as unknown as MockServerResponse
     }

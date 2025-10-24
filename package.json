@@ -1,6 +1,6 @@
 {
   "name": "middy-mcp-adapter",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "Middleware to adapt mcp server interface to aws lambda",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -32,9 +32,9 @@
   },
   "lint-staged": {
     "*.ts": [
-      "eslint --fix",
-      "prettier --write",
-      "vitest run"
+      "npm run lint",
+      "npm run format",
+      "npm run coverage"
     ]
   },
   "scripts": {
@@ -43,7 +43,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "prepublishOnly": "npm run build",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint": "eslint --fix",
+    "format": "prettier --write",
+    "coverage": "vitest run --coverage"
   },
   "repository": {
     "type": "git",
@@ -72,6 +75,7 @@
     "@types/aws-lambda": "^8.10.156",
     "@types/http-errors": "^2.0.5",
     "@types/node": "^24.9.1",
+    "@vitest/coverage-istanbul": "^4.0.3",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^16.4.0",
