@@ -46,12 +46,17 @@ function createIncomingMessage(
 ): IncomingMessageWithAuth {
   let url = event.path
   if (event.queryStringParameters) {
-    const params: Record<string, string> = {}
-    Object.entries(event.queryStringParameters).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        params[key] = value
-      }
-    })
+    const params = Object.entries(event.queryStringParameters)
+      .filter((entries) => entries.every(Boolean))
+      .map((entries) => entries as [string, string])
+      .reduce(
+        (acc, [key, value]) => {
+          acc[key] = value
+          return acc
+        },
+        {} as Record<string, string>
+      )
+
     const queryString = new URLSearchParams(params).toString()
     if (queryString) {
       url += `?${queryString}`
@@ -60,9 +65,12 @@ function createIncomingMessage(
 
   const normalizedHeaders: Record<string, string> = {}
   if (event.headers) {
-    Object.entries(event.headers).forEach(([key, value]) => {
-      normalizedHeaders[key.toLowerCase()] = value ?? ''
-    })
+    Object.entries(event.headers)
+      .filter((entries) => entries.every(Boolean))
+      .map((entries) => entries as [string, string])
+      .forEach(([key, value]) => {
+        normalizedHeaders[key.toLowerCase()] = value
+      })
   }
 
   const req = {
@@ -344,6 +352,7 @@ const mcpMiddleware = ({
       request.response = {
         ...result,
         headers: {
+          ...request.response?.headers,
           ...result.headers
         }
       }
@@ -352,3 +361,4 @@ const mcpMiddleware = ({
 }
 
 export default mcpMiddleware
+export type { MCPContext, MCPMiddlewareOptions }

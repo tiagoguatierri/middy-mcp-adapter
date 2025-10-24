@@ -17,6 +17,10 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "types": [
+      "vitest/globals",
+      "node"
+    ]
   }
 }

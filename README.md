@@ -18,7 +18,7 @@ npm install middy-mcp-adapter
 ## Requirements
 
 - Node.js >= 18.0.0
-- Middy >= 6.0.0
+- Middy >= 4.0.0
 
 ## Usage
 
