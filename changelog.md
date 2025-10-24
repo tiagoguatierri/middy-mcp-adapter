@@ -31,3 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Configured proper entry points (main, module, types, exports)
 - Added `sideEffects: false` for better tree-shaking
 - Added `prepublishOnly` script
+
+## [0.0.4] - 2025-10-24
+
+### Changed
+
+- Downgraded `@middy/core` peer dependency to `>=4.0.0` for broader compatibility
