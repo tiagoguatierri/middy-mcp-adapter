@@ -1,0 +1,47 @@
+{
+  "name": "middy-mcp-adapter",
+  "version": "0.0.1",
+  "description": "Middleware to adapt mcp server interface to aws lambda",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tiagoguatierri/middy-mcp-adapter.git"
+  },
+  "keywords": [
+    "Middy",
+    "Lambda",
+    "Middleware",
+    "Serverless",
+    "Node.js",
+    "AWS",
+    "AWS Lambda",
+    "MCP"
+  ],
+  "author": "Tiago Guatierri",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tiagoguatierri/middy-mcp-adapter/issues"
+  },
+  "homepage": "https://github.com/tiagoguatierri/middy-mcp-adapter#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.38.0",
+    "eslint": "^9.38.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^16.4.0",
+    "jiti": "^2.6.1",
+    "prettier": "3.6.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.2",
+    "vitest": "^4.0.3"
+  }
+}
