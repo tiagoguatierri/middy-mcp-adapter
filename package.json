@@ -1,6 +1,6 @@
 {
   "name": "middy-mcp-adapter",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Middleware to adapt mcp server interface to aws lambda",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -59,11 +59,15 @@
   "homepage": "https://github.com/tiagoguatierri/middy-mcp-adapter#readme",
   "devDependencies": {
     "@eslint/js": "^9.38.0",
+    "@middy/core": "^6.4.5",
+    "@modelcontextprotocol/sdk": "^1.20.2",
     "@types/aws-lambda": "^8.10.156",
+    "@types/http-errors": "^2.0.5",
     "@types/node": "^24.9.1",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^16.4.0",
+    "http-errors": "^2.0.0",
     "jiti": "^2.6.1",
     "prettier": "3.6.2",
     "tsup": "^8.5.0",
@@ -71,10 +75,9 @@
     "typescript-eslint": "^8.46.2",
     "vitest": "^4.0.3"
   },
-  "dependencies": {
-    "@middy/core": "^6.4.5",
-    "@modelcontextprotocol/sdk": "^1.20.2",
-    "@types/http-errors": "^2.0.5",
-    "http-errors": "^2.0.0"
+  "peerDependencies": {
+    "@middy/core": ">=6.0.0",
+    "@modelcontextprotocol/sdk": ">=1.0.0",
+    "http-errors": ">=2.0.0"
   }
 }
