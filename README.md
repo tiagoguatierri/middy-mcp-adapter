@@ -33,10 +33,10 @@ import middy from '@middy/core'
 import httpErrorHandler from '@middy/http-error-handler'
 import mcpMiddleware from 'middy-mcp-adapter'
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js'
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 
 // Create an MCP server
-const server = new Server({
+const server = new McpServer({
   name: 'Lambda hosted MCP Server',
   version: '1.0.0'
 })
@@ -53,14 +53,14 @@ import middy from '@middy/core'
 import httpErrorHandler from '@middy/http-error-handler'
 import mcpMiddleware from 'middy-mcp-adapter'
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js'
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import {
   ListToolsRequestSchema,
   CallToolRequestSchema
 } from '@modelcontextprotocol/sdk/types.js'
 import { z } from 'zod'
 
-const server = new Server({
+const server = new McpServer({
   name: 'Lambda hosted MCP Server',
   version: '1.0.0'
 })
