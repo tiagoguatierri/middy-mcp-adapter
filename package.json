@@ -1,6 +1,6 @@
 {
   "name": "middy-mcp-adapter",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Middleware to adapt mcp server interface to aws lambda",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -91,7 +91,7 @@
   },
   "peerDependencies": {
     "@middy/core": ">=4.0.0",
-    "@modelcontextprotocol/sdk": "^1.25.0",
+    "@modelcontextprotocol/sdk": ">=1.0.0 <1.25.0",
     "http-errors": ">=2.0.0"
   }
 }

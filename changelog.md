@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.2] - 2025-12-17
+## [0.1.3] - 2025-12-17
+
+### Fixed
+
+- Corrected peer dependency constraint for `@modelcontextprotocol/sdk` to `>=1.0.0 <1.25.0` (was incorrectly set to `^1.25.0` in v0.1.2)
+
+## [0.1.2] - 2025-12-17 [DEPRECATED]
 
 ### Changed
 
@@ -15,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Resolved compatibility issues with MCP SDK v1.25.0+ that caused 400 errors
+
+### Known Issues
+
+- Peer dependency was incorrectly published as `^1.25.0` instead of `>=1.0.0 <1.25.0`. Use v0.1.3 instead.
 
 ## [0.1.1] - 2025-11-14
 
